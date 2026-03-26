@@ -1,0 +1,236 @@
+import { AuditEntry } from '@/lib/types';
+
+export const mockAuditLog: AuditEntry[] = [
+  {
+    id: 'audit-001',
+    timestamp: '2026-03-25T08:00:00Z',
+    agentId: 'ceo-001',
+    agentName: 'CEO Agent',
+    action: 'Spawned child agents',
+    gateType: 'spawn',
+    gateResult: 'auto_approved',
+    details: 'Spawned CTO, CMO, CFO, COO managers for landing page project',
+  },
+
+  {
+    id: 'audit-002',
+    timestamp: '2026-03-25T08:01:00Z',
+    agentId: 'cto-001',
+    agentName: 'CTO Manager',
+    action: 'Spawned frontend developer',
+    gateType: 'spawn',
+    gateResult: 'auto_approved',
+    details: 'Spawned Frontend Developer agent for hero and features implementation',
+  },
+
+  {
+    id: 'audit-003',
+    timestamp: '2026-03-25T08:05:00Z',
+    agentId: 'researcher-001',
+    agentName: 'Research Analyst',
+    action: 'Tool use: WebSearch',
+    toolUsed: 'WebSearch',
+    modelUsed: 'gpt-4o',
+    tokensUsed: 2100,
+    costUsd: 0.31,
+    gateResult: 'auto_approved',
+    details: 'Searched for competitor landing page design patterns',
+  },
+
+  {
+    id: 'audit-004',
+    timestamp: '2026-03-25T08:10:00Z',
+    agentId: 'frontend-001',
+    agentName: 'Frontend Developer',
+    action: 'Tool use: Write',
+    toolUsed: 'Write',
+    modelUsed: 'claude-haiku-4',
+    tokensUsed: 1850,
+    costUsd: 0.18,
+    gateResult: 'auto_approved',
+    details: 'Created Hero.tsx component with gradient background',
+  },
+
+  {
+    id: 'audit-005',
+    timestamp: '2026-03-25T08:15:00Z',
+    agentId: 'cfo-001',
+    agentName: 'CFO Manager',
+    action: 'Budget alert triggered',
+    gateType: 'budget',
+    gateResult: 'pending',
+    details: 'OpenAI costs exceeded 20% of daily budget. Flagged for review.',
+  },
+
+  {
+    id: 'audit-006',
+    timestamp: '2026-03-25T08:20:00Z',
+    agentId: 'ceo-001',
+    agentName: 'CEO Agent',
+    action: 'Approved budget alert',
+    gateType: 'budget',
+    gateResult: 'approved',
+    approvedBy: 'user-001',
+    details: 'Approved continued spending. OpenAI costs justified by research quality.',
+  },
+
+  {
+    id: 'audit-007',
+    timestamp: '2026-03-25T08:30:00Z',
+    agentId: 'researcher-001',
+    agentName: 'Research Analyst',
+    action: 'Completed research task',
+    gateResult: 'no_gate',
+    details:
+      'Successfully analyzed 5 competitors. Output saved to competitor-analysis.md',
+  },
+
+  {
+    id: 'audit-008',
+    timestamp: '2026-03-25T08:45:00Z',
+    agentId: 'content-001',
+    agentName: 'Content Writer',
+    action: 'Tool use: Write',
+    toolUsed: 'Write',
+    modelUsed: 'claude-sonnet-4',
+    tokensUsed: 1200,
+    costUsd: 0.18,
+    gateResult: 'auto_approved',
+    details: 'Started writing hero section copy. 3 variations drafted.',
+  },
+
+  {
+    id: 'audit-009',
+    timestamp: '2026-03-25T09:00:00Z',
+    agentId: 'cto-001',
+    agentName: 'CTO Manager',
+    action: 'Task assignment',
+    gateResult: 'no_gate',
+    details: 'Assigned frontend implementation task. Priority: critical. Timeline: 2 days.',
+  },
+
+  {
+    id: 'audit-010',
+    timestamp: '2026-03-25T09:15:00Z',
+    agentId: 'frontend-001',
+    agentName: 'Frontend Developer',
+    action: 'Tool use: Edit',
+    toolUsed: 'Edit',
+    modelUsed: 'claude-haiku-4',
+    tokensUsed: 950,
+    costUsd: 0.09,
+    gateResult: 'auto_approved',
+    details: 'Added responsive breakpoints for mobile devices. Tested on iPhone 12',
+  },
+
+  {
+    id: 'audit-011',
+    timestamp: '2026-03-25T09:30:00Z',
+    agentId: 'designer-001',
+    agentName: 'UI Designer',
+    action: 'Started wireframe task',
+    gateResult: 'no_gate',
+    details: 'Began creating landing page wireframe. Coordinating with frontend dev.',
+  },
+
+  {
+    id: 'audit-012',
+    timestamp: '2026-03-25T10:00:00Z',
+    agentId: 'cmo-001',
+    agentName: 'CMO Manager',
+    action: 'Requested escalation approval',
+    gateType: 'escalation',
+    gateResult: 'pending',
+    details: 'Content writer needs guidance on hero copy angle. Escalated for decision.',
+  },
+
+  {
+    id: 'audit-013',
+    timestamp: '2026-03-25T10:05:00Z',
+    agentId: 'ceo-001',
+    agentName: 'CEO Agent',
+    action: 'Resolved escalation',
+    gateType: 'escalation',
+    gateResult: 'approved',
+    approvedBy: 'user-001',
+    details: 'Approved "Deploy Faster" angle for hero copy. Aligns with strategy.',
+  },
+
+  {
+    id: 'audit-014',
+    timestamp: '2026-03-25T10:45:00Z',
+    agentId: 'frontend-001',
+    agentName: 'Frontend Developer',
+    action: 'Tool use: Bash',
+    toolUsed: 'Bash',
+    modelUsed: 'claude-haiku-4',
+    gateResult: 'pending',
+    details: 'Running npm test. Requires approval to execute system command.',
+  },
+
+  {
+    id: 'audit-015',
+    timestamp: '2026-03-25T10:48:00Z',
+    agentId: 'cto-001',
+    agentName: 'CTO Manager',
+    action: 'Approved bash execution',
+    gateResult: 'approved',
+    approvedBy: 'user-001',
+    details: 'Approved npm test execution. Standard development workflow.',
+  },
+
+  {
+    id: 'audit-016',
+    timestamp: '2026-03-25T11:00:00Z',
+    agentId: 'qa-001',
+    agentName: 'QA Engineer',
+    action: 'Task queued',
+    gateResult: 'no_gate',
+    details: 'Unit test writing queued. Awaiting frontend component completion.',
+  },
+
+  {
+    id: 'audit-017',
+    timestamp: '2026-03-25T11:15:00Z',
+    agentId: 'cfo-001',
+    agentName: 'CFO Manager',
+    action: 'Cost report generated',
+    gateResult: 'no_gate',
+    details: 'Daily cost report: $2.18 spent. Monthly total: $14.32 of $100 budget.',
+  },
+
+  {
+    id: 'audit-018',
+    timestamp: '2026-03-25T11:30:00Z',
+    agentId: 'frontend-001',
+    agentName: 'Frontend Developer',
+    action: 'Status update provided',
+    gateResult: 'no_gate',
+    details: 'Hero section 75% complete. Features grid initialized. On track for deadline.',
+  },
+
+  {
+    id: 'audit-019',
+    timestamp: '2026-03-25T11:45:00Z',
+    agentId: 'frontend-001',
+    agentName: 'Frontend Developer',
+    action: 'Escalated blocker',
+    gateType: 'escalation',
+    gateResult: 'pending',
+    details:
+      'Unclear specifications on hover animations for features grid. Blocked on clarification.',
+  },
+
+  {
+    id: 'audit-020',
+    timestamp: '2026-03-25T11:50:00Z',
+    agentId: 'cto-001',
+    agentName: 'CTO Manager',
+    action: 'Resolved blocker',
+    gateType: 'escalation',
+    gateResult: 'approved',
+    approvedBy: 'user-001',
+    details:
+      'Approved subtle hover animations (scale 1.02, shadow). Development can continue.',
+  },
+];
