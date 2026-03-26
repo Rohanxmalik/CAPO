@@ -7,6 +7,7 @@ out/
 
 # Build
 *.tsbuildinfo
+dist/
 
 # Environment
 .env

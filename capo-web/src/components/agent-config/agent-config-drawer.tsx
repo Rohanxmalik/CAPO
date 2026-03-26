@@ -15,13 +15,17 @@ import { ToolsTab } from "./tabs/tools-tab";
 import { MemoryTab } from "./tabs/memory-tab";
 import { BudgetTab } from "./tabs/budget-tab";
 import { ConstraintsTab } from "./tabs/constraints-tab";
+import { SkillsTab } from "./tabs/skills-tab";
+import { SubAgentsTab } from "./tabs/sub-agents-tab";
 
 const tabs = [
   { value: "model", label: "Model" },
   { value: "prompt", label: "Prompt" },
   { value: "tools", label: "Tools" },
+  { value: "skills", label: "Skills" },
   { value: "memory", label: "Memory" },
   { value: "budget", label: "Budget" },
+  { value: "sub-agents", label: "Team" },
   { value: "constraints", label: "Rules" },
 ] as const;
 
@@ -73,11 +77,17 @@ export function AgentConfigDrawer() {
             <TabsContent value="tools" className="mt-0">
               <ToolsTab agent={agent} />
             </TabsContent>
+            <TabsContent value="skills" className="mt-0">
+              <SkillsTab agent={agent} />
+            </TabsContent>
             <TabsContent value="memory" className="mt-0">
               <MemoryTab agent={agent} />
             </TabsContent>
             <TabsContent value="budget" className="mt-0">
               <BudgetTab agent={agent} />
+            </TabsContent>
+            <TabsContent value="sub-agents" className="mt-0">
+              <SubAgentsTab agent={agent} />
             </TabsContent>
             <TabsContent value="constraints" className="mt-0">
               <ConstraintsTab agent={agent} />
