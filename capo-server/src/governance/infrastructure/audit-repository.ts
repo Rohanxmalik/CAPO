@@ -14,8 +14,14 @@ export const auditRepository = {
       sql += ` AND agent_id = $${params.length}`;
     }
 
-    // Count total
-    const countResult = await query(`SELECT COUNT(*) FROM audit_log WHERE workspace_id = $1`, [workspaceId]);
+    // Count total (respects agent filter)
+    let countSql = 'SELECT COUNT(*) FROM audit_log WHERE workspace_id = $1';
+    const countParams: unknown[] = [workspaceId];
+    if (opts?.agentId) {
+      countParams.push(opts.agentId);
+      countSql += ` AND agent_id = $${countParams.length}`;
+    }
+    const countResult = await query(countSql, countParams);
     const total = Number((countResult.rows[0] as Record<string, unknown>).count);
 
     sql += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;

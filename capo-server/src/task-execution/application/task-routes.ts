@@ -1,7 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 import { taskRepository } from '../infrastructure/task-repository.js';
+import { auditRepository } from '../../governance/infrastructure/audit-repository.js';
 import { success, error } from '../../plugins/envelope.js';
 import { eventBus } from '../../shared/event-bus.js';
+import { createTaskSchema, claimTaskSchema } from '../../shared/schemas.js';
 
 export async function taskRoutes(app: FastifyInstance) {
   // List tasks
@@ -23,7 +25,11 @@ export async function taskRoutes(app: FastifyInstance) {
   // Create task
   app.post('/api/v1/workspaces/:workspaceId/tasks', async (req, reply) => {
     const { workspaceId } = req.params as { workspaceId: string };
-    const body = req.body as Record<string, unknown>;
+    const parsed = createTaskSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return error(reply, parsed.error.issues.map((i) => i.message).join('; '), 400);
+    }
+    const body = parsed.data as Record<string, unknown>;
     const task = await taskRepository.create({
       ...body,
       workspaceId,
@@ -33,6 +39,14 @@ export async function taskRoutes(app: FastifyInstance) {
       type: 'task.update',
       payload: { taskId: (task as Record<string, unknown>).id, status: 'pending' },
       timestamp: new Date().toISOString(),
+    });
+
+    await auditRepository.create({
+      workspaceId,
+      taskId: (task as Record<string, unknown>).id as string,
+      agentId: body.createdBy as string | undefined,
+      action: 'task.created',
+      details: `Task "${body.title}" created with priority ${body.priority ?? 'medium'}`,
     });
 
     return success(reply, task, undefined, 201);
@@ -51,13 +65,24 @@ export async function taskRoutes(app: FastifyInstance) {
       timestamp: new Date().toISOString(),
     });
 
+    await auditRepository.create({
+      workspaceId,
+      taskId,
+      action: body.status === 'completed' ? 'task.completed' : 'task.updated',
+      details: `Task updated: ${Object.keys(body).join(', ')}`,
+    });
+
     return success(reply, task);
   });
 
   // Atomic claim next task
   app.post('/api/v1/workspaces/:workspaceId/tasks/claim', async (req, reply) => {
     const { workspaceId } = req.params as { workspaceId: string };
-    const { agentId, taskType } = req.body as { agentId: string; taskType?: string };
+    const parsed = claimTaskSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return error(reply, parsed.error.issues.map((i) => i.message).join('; '), 400);
+    }
+    const { agentId, taskType } = parsed.data;
     const task = await taskRepository.claimNext(workspaceId, agentId, taskType);
     if (!task) return success(reply, null);
 
@@ -65,6 +90,14 @@ export async function taskRoutes(app: FastifyInstance) {
       type: 'task.update',
       payload: { taskId: (task as Record<string, unknown>).id, status: 'in_progress', agentId },
       timestamp: new Date().toISOString(),
+    });
+
+    await auditRepository.create({
+      workspaceId,
+      taskId: (task as Record<string, unknown>).id as string,
+      agentId,
+      action: 'task.claimed',
+      details: 'Task claimed via atomic checkout',
     });
 
     return success(reply, task);

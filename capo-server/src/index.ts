@@ -8,6 +8,7 @@ import { agentRoutes } from './agent-lifecycle/application/agent-routes.js';
 import { taskRoutes } from './task-execution/application/task-routes.js';
 import { budgetRoutes } from './budget/application/budget-routes.js';
 import { auditRoutes } from './governance/application/audit-routes.js';
+import { memoryRoutes } from './memory/application/memory-routes.js';
 import { redis, subscriber } from './shared/redis.js';
 import { AppError } from './shared/errors.js';
 
@@ -23,6 +24,7 @@ await app.register(agentRoutes);
 await app.register(taskRoutes);
 await app.register(budgetRoutes);
 await app.register(auditRoutes);
+await app.register(memoryRoutes);
 
 // Health check
 app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));

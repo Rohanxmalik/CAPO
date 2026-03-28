@@ -57,6 +57,47 @@ export const workspaceRepository = {
     return rowToCamel(result.rows[0]);
   },
 
+  async update(id: string, data: Record<string, unknown>) {
+    const setClauses: string[] = [];
+    const values: unknown[] = [];
+    let paramIndex = 1;
+
+    const columnMap: Record<string, string> = {
+      name: 'name',
+      description: 'description',
+      status: 'status',
+      budget: 'budget',
+      spent: 'spent',
+      teamMembers: 'team_members',
+      agentCount: 'agent_count',
+      taskCount: 'task_count',
+    };
+
+    const jsonColumns = new Set(['teamMembers']);
+
+    for (const [key, value] of Object.entries(data)) {
+      const column = columnMap[key];
+      if (!column) continue;
+      setClauses.push(`${column} = $${paramIndex}`);
+      values.push(jsonColumns.has(key) ? JSON.stringify(value) : value);
+      paramIndex++;
+    }
+
+    if (setClauses.length === 0) return null;
+
+    setClauses.push(`updated_at = NOW()`);
+    values.push(id);
+
+    const result = await query(
+      `UPDATE workspaces SET ${setClauses.join(', ')}
+       WHERE id = $${paramIndex}
+       RETURNING *`,
+      values
+    );
+    if (result.rows.length === 0) return null;
+    return rowToCamel(result.rows[0]);
+  },
+
   async delete(id: string) {
     const result = await query('DELETE FROM workspaces WHERE id = $1 RETURNING id', [id]);
     return result.rowCount! > 0;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -9,8 +10,23 @@ import { AgentRosterPanel } from "@/components/workspace/agent-roster/agent-rost
 import { WorkflowCanvasPanel } from "@/components/workspace/workflow-canvas/workflow-canvas-panel";
 import { ChatPanel } from "@/components/workspace/chat-panel/chat-panel";
 import { AgentConfigDrawer } from "@/components/agent-config/agent-config-drawer";
+import { useProjectStore } from "@/lib/stores";
+import { useAgentStore } from "@/lib/stores";
+import { useWorkspaceSocket } from "@/lib/hooks";
 
 export default function WorkspacePage() {
+  const activeProjectId = useProjectStore((s) => s.activeProjectId);
+  const fetchAgents = useAgentStore((s) => s.fetchAgents);
+
+  // Fetch agents from API when workspace changes
+  useEffect(() => {
+    if (activeProjectId) {
+      fetchAgents(activeProjectId);
+    }
+  }, [activeProjectId, fetchAgents]);
+
+  // Connect WebSocket for real-time updates
+  useWorkspaceSocket(activeProjectId);
   return (
     <>
       <ResizablePanelGroup orientation="horizontal" className="flex-1">

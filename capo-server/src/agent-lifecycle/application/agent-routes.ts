@@ -1,7 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 import { agentRepository } from '../infrastructure/agent-repository.js';
+import { auditRepository } from '../../governance/infrastructure/audit-repository.js';
 import { success, error } from '../../plugins/envelope.js';
 import { eventBus } from '../../shared/event-bus.js';
+import { createAgentSchema, updateAgentSchema } from '../../shared/schemas.js';
 
 export async function agentRoutes(app: FastifyInstance) {
   // List agents in workspace
@@ -22,7 +24,11 @@ export async function agentRoutes(app: FastifyInstance) {
   // Create agent
   app.post('/api/v1/workspaces/:workspaceId/agents', async (req, reply) => {
     const { workspaceId } = req.params as { workspaceId: string };
-    const body = req.body as Record<string, unknown>;
+    const parsed = createAgentSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return error(reply, parsed.error.issues.map((i) => i.message).join('; '), 400);
+    }
+    const body = parsed.data as Record<string, unknown>;
     const agent = await agentRepository.create({
       ...body,
       workspaceId,
@@ -34,13 +40,25 @@ export async function agentRoutes(app: FastifyInstance) {
       timestamp: new Date().toISOString(),
     });
 
+    await auditRepository.create({
+      workspaceId,
+      agentId: agent.id as string,
+      agentName: (body.displayName ?? body.name) as string,
+      action: 'agent.created',
+      details: `Created agent "${body.name}" with role ${body.role}`,
+    });
+
     return success(reply, agent, undefined, 201);
   });
 
   // Update agent
   app.patch('/api/v1/workspaces/:workspaceId/agents/:agentId', async (req, reply) => {
     const { workspaceId, agentId } = req.params as { workspaceId: string; agentId: string };
-    const body = req.body as Record<string, unknown>;
+    const parsed = updateAgentSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return error(reply, parsed.error.issues.map((i) => i.message).join('; '), 400);
+    }
+    const body = parsed.data as Record<string, unknown>;
     const agent = await agentRepository.update(workspaceId, agentId, body);
     if (!agent) return error(reply, 'Agent not found', 404);
 
@@ -52,6 +70,13 @@ export async function agentRoutes(app: FastifyInstance) {
       });
     }
 
+    await auditRepository.create({
+      workspaceId,
+      agentId,
+      action: 'agent.updated',
+      details: `Updated fields: ${Object.keys(body).join(', ')}`,
+    });
+
     return success(reply, agent);
   });
 
@@ -60,6 +85,13 @@ export async function agentRoutes(app: FastifyInstance) {
     const { workspaceId, agentId } = req.params as { workspaceId: string; agentId: string };
     const deleted = await agentRepository.delete(workspaceId, agentId);
     if (!deleted) return error(reply, 'Agent not found', 404);
+
+    await auditRepository.create({
+      workspaceId,
+      agentId,
+      action: 'agent.deleted',
+    });
+
     return success(reply, { id: agentId, deleted: true });
   });
 }

@@ -24,6 +24,15 @@ export async function workspaceRoutes(app: FastifyInstance) {
     return success(reply, workspace, undefined, 201);
   });
 
+  // Update workspace
+  app.patch('/api/v1/workspaces/:workspaceId', async (req, reply) => {
+    const { workspaceId } = req.params as { workspaceId: string };
+    const body = req.body as Record<string, unknown>;
+    const workspace = await workspaceRepository.update(workspaceId, body);
+    if (!workspace) return error(reply, 'Workspace not found', 404);
+    return success(reply, workspace);
+  });
+
   // Delete workspace
   app.delete('/api/v1/workspaces/:workspaceId', async (req, reply) => {
     const { workspaceId } = req.params as { workspaceId: string };

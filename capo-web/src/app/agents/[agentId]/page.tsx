@@ -65,7 +65,7 @@ export default function AgentDetailPage({
 
           <TabsContent value="prompt" className="mt-4">
             <div className="rounded-lg border border-border/40 bg-card/30 p-4 font-mono text-xs whitespace-pre-wrap leading-relaxed max-w-3xl">
-              {template.description}
+              {template.systemPrompt}
             </div>
           </TabsContent>
 
@@ -74,6 +74,10 @@ export default function AgentDetailPage({
               <div className="rounded-lg border border-border/40 bg-card/30 p-3">
                 <p className="text-[10px] text-muted-foreground mb-1">Model</p>
                 <p className="text-xs font-medium">{template.defaultModel}</p>
+              </div>
+              <div className="rounded-lg border border-border/40 bg-card/30 p-3">
+                <p className="text-[10px] text-muted-foreground mb-1">Temperature</p>
+                <p className="text-xs font-medium">{template.defaultTemperature}</p>
               </div>
               <div className="rounded-lg border border-border/40 bg-card/30 p-3">
                 <p className="text-[10px] text-muted-foreground mb-1">Category</p>
@@ -86,6 +90,14 @@ export default function AgentDetailPage({
               <div className="rounded-lg border border-border/40 bg-card/30 p-3">
                 <p className="text-[10px] text-muted-foreground mb-1">Type</p>
                 <p className="text-xs font-medium capitalize">{template.type}</p>
+              </div>
+              <div className="rounded-lg border border-border/40 bg-card/30 p-3 col-span-2">
+                <p className="text-[10px] text-muted-foreground mb-1">Skills</p>
+                <div className="flex flex-wrap gap-1">
+                  {template.skills.map((skill) => (
+                    <Badge key={skill} variant="secondary" className="text-[10px]">{skill}</Badge>
+                  ))}
+                </div>
               </div>
             </div>
           </TabsContent>
